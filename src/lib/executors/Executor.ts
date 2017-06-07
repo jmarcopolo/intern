@@ -10,11 +10,13 @@ import { getInterface as getObjectInterface, ObjectInterface } from '../interfac
 import { getInterface as getTddInterface, TddInterface } from '../interfaces/tdd';
 import { getInterface as getBddInterface, BddInterface } from '../interfaces/bdd';
 import { getInterface as getBenchmarkInterface, BenchmarkInterface } from '../interfaces/benchmark';
+import { getInterface as getQUnitInterface, QUnitInterface } from '../interfaces/qunit';
 import { BenchmarkReporterOptions } from '../reporters/Benchmark';
 import Promise from '@dojo/shim/Promise';
-import { assert, expect, should } from 'chai';
+import { assert, expect, should, AssertionError } from 'chai';
 import { RuntimeEnvironment } from '../types';
 import global from '@dojo/core/global';
+
 
 const console: Console = global.console;
 
@@ -85,10 +87,12 @@ export default abstract class Executor<E extends Events = Events, C extends Conf
 		this.registerPlugin('interface.tdd', () => getTddInterface(this));
 		this.registerPlugin('interface.bdd', () => getBddInterface(this));
 		this.registerPlugin('interface.benchmark', () => getBenchmarkInterface(this));
+		this.registerPlugin('interface.qunit', () => getQUnitInterface(this));
 
 		this.registerPlugin('chai.assert', () => assert);
 		this.registerPlugin('chai.expect', () => expect);
 		this.registerPlugin('chai.should', () => should);
+		this.registerPlugin('chai.AssertionError', () => AssertionError);
 
 		this._rootSuite = new Suite({ executor: this });
 
