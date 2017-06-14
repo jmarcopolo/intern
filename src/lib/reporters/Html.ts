@@ -3,6 +3,9 @@ import Reporter, { eventHandler, ReporterProperties } from './Reporter';
 import Test from '../Test';
 import Suite from '../Suite';
 
+// Import for webpack
+import './html/html.css';
+
 /**
  * The Html reporter displays an HTML report in the browser.
  */
@@ -108,20 +111,6 @@ export default class Html extends Reporter implements HtmlProperties {
 				}
 			};
 		}
-	}
-
-	protected _injectCSS() {
-		const document = this.document;
-		// Prevent FOUC
-		const style = document.createElement('style');
-		style.innerHTML = 'body { visibility: hidden; }';
-
-		const link = document.createElement('link');
-		link.rel = 'stylesheet';
-		link.href = this.executor.config.internPath + 'lib/reporters/html/html.css';
-
-		document.head.appendChild(style);
-		document.head.appendChild(link);
 	}
 
 	protected _getIndentLevel(node: Element) {
@@ -320,8 +309,6 @@ export default class Html extends Reporter implements HtmlProperties {
 
 		if (!suite.hasParent) {
 			this._generateSummary(suite);
-
-			this._injectCSS();
 
 			document.body.innerHTML = '';
 			document.body.className = '';

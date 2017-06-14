@@ -3,6 +3,9 @@ import { normalizePathEnding } from '../common/util';
 import { RuntimeEnvironment } from '../types';
 import Task from '@dojo/core/async/Task';
 import global from '@dojo/core/global';
+import Html from '../reporters/Html';
+import Dom from '../reporters/Dom';
+import ConsoleReporter from '../reporters/Console';
 
 const console: Console = global.console;
 
@@ -29,6 +32,10 @@ export default class Browser extends Executor<Events, Config> {
 			this.emit('error', error);
 		});
 
+		this.registerPlugin('reporter', 'html', () => Html);
+		this.registerPlugin('reporter', 'dom', () => Dom);
+		this.registerPlugin('reporter', 'console', () => ConsoleReporter);
+
 		if (config) {
 			this.configure(config);
 		}
@@ -39,7 +46,7 @@ export default class Browser extends Executor<Events, Config> {
 	}
 
 	/**
-	 * Load a script or scripts via script injection.
+	 * Load scripts using a global 'require' function or via script injection
 	 *
 	 * @param script a path to a script
 	 */
@@ -52,11 +59,14 @@ export default class Browser extends Executor<Events, Config> {
 			script = [script];
 		}
 
+		// If a global require is available, use that
+		const load = global.require || injectScript;
+
 		return script.reduce((previous, script) => {
 			if (script[0] !== '/') {
 				script = `${this.config.basePath}${script}`;
 			}
-			return previous.then(() => injectScript(script));
+			return previous.then(() => load(script));
 		}, Task.resolve());
 	}
 

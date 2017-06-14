@@ -424,11 +424,9 @@ registerSuite('lib/executors/Executor', function () {
 				'invalid reporter'() {
 					executor.configure({ plugins: <any>'foo.js' });
 					const pluginInit = spy(() => 'bar');
-					executor.registerPlugin('reporter', 'foo', pluginInit);
-					return executor.run().then(
-						() => { throw new Error('registration should not have succeeded'); },
-						error => { assert.match(error.message, /A reporter plugin/); }
-					);
+					assert.throws(() => {
+						executor.registerPlugin('reporter', 'foo', pluginInit);
+					}, /A reporter plugin/);
 				}
 			},
 
@@ -497,9 +495,9 @@ registerSuite('lib/executors/Executor', function () {
 					},
 
 					invalid() {
-						executor.registerPlugin('reporter.foo', () => { return {}; });
-						executor.configure({ reporters: <any>'foo' });
-						return assertRunFails(executor, /A reporter plugin/);
+						assert.throws(() => {
+							executor.registerPlugin('reporter.foo', () => { return {}; });
+						}, /A reporter plugin/);
 					}
 				},
 

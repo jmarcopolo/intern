@@ -3,9 +3,16 @@ var path = require('path');
 var common = {
 	devtool: 'source-map',
 	module: {
-		loaders: [
-			{ test: /_(?:build|tests)\//, loader: 'umd-compat-loader' },
-			{ test: /@dojo\//, loader: 'umd-compat-loader' }
+		rules: [
+			{ test: /\/_(?:build|tests)\/.*\.js$/, use: 'umd-compat-loader' },
+			{ test: /\/@dojo\/.*\.js$/, use: 'umd-compat-loader' },
+			{
+				test: /\.css$/,
+				use: [
+					{ loader: 'style-loader' },
+					{ loader: 'css-loader' }
+				]
+			}
 		],
 		noParse: /benchmark\/benchmark.js/
 	},
