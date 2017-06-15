@@ -16,7 +16,7 @@ export default class Browser extends Executor<Events, Config> {
 	constructor(config?: Partial<Config>) {
 		super(<Config>{
 			basePath: '/',
-			internPath: global.location.pathname
+			internPath: 'node_modules/intern/'
 		});
 
 		// Report uncaught errors
@@ -46,27 +46,20 @@ export default class Browser extends Executor<Events, Config> {
 	}
 
 	/**
-	 * Load scripts using a global 'require' function or via script injection
+	 * Load scripts using script injection
 	 *
 	 * @param script a path to a script
 	 */
 	loadScript(script: string | string[]) {
-		if (script == null) {
-			return Task.resolve();
-		}
-
 		if (typeof script === 'string') {
 			script = [script];
 		}
-
-		// If a global require is available, use that
-		const load = global.require || injectScript;
 
 		return script.reduce((previous, script) => {
 			if (script[0] !== '/') {
 				script = `${this.config.basePath}${script}`;
 			}
-			return previous.then(() => load(script));
+			return previous.then(() => injectScript(script));
 		}, Task.resolve());
 	}
 
@@ -74,8 +67,8 @@ export default class Browser extends Executor<Events, Config> {
 		return super._resolveConfig().then(() => {
 			const config = this.config;
 
-			if (!config.internPath) {
-				config.internPath = 'node_modules/intern/';
+			if (config.internPath[0] !== '/') {
+				config.internPath = `${config.basePath}${config.internPath}`;
 			}
 
 			// Filter out globs from suites and browser suites
@@ -90,10 +83,6 @@ export default class Browser extends Executor<Events, Config> {
 			[ 'basePath', 'internPath' ].forEach((key: keyof Config) => {
 				config[key] = normalizePathEnding(<string>config[key]);
 			});
-
-			if (config.internPath[0] !== '/') {
-				config.internPath = `${config.basePath}${config.internPath}`;
-			}
 		});
 	}
 }

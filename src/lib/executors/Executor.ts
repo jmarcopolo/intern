@@ -56,6 +56,7 @@ export default abstract class Executor<E extends Events = Events, C extends Conf
 			excludeInstrumentation: /(?:node_modules|browser|tests)\//,
 			filterErrorStack: false,
 			grep: new RegExp(''),
+			loader: { script: 'default' },
 			name: 'intern',
 			node: {
 				plugins: <PluginDescriptor[]>[],
@@ -532,6 +533,7 @@ export default abstract class Executor<E extends Events = Events, C extends Conf
 			if (loader) {
 				let script = loader.script;
 				switch (script) {
+					case 'default':
 					case 'dojo':
 					case 'dojo2':
 					case 'systemjs':

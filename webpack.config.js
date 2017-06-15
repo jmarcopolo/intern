@@ -1,4 +1,5 @@
 var path = require('path');
+var webpack = require('webpack');
 
 var common = {
 	devtool: 'source-map',
@@ -24,7 +25,10 @@ var common = {
 		timings: false,
 		version: false,
 		warnings: true
-	}
+	},
+	plugins: [
+		new webpack.optimize.UglifyJsPlugin()
+	]
 };
 
 module.exports = [
